@@ -20,30 +20,7 @@ public class EmailService : IEmailService
     {
         try
         {
-            // Log all possible configuration sources
-            _logger.LogInformation("=== EMAIL SERVICE CONFIGURATION DEBUG ===");
-            _logger.LogInformation("Reading AWS:SenderEmail from configuration...");
-            
             var senderEmail = _configuration["AWS:SenderEmail"] ?? "noreply@yourdomain.com";
-            
-            _logger.LogInformation("Configuration value for AWS:SenderEmail: '{SenderEmail}'", senderEmail);
-            _logger.LogInformation("Recipient email: '{RecipientEmail}'", email);
-            _logger.LogInformation("Verification link: '{VerificationLink}'", verificationLink);
-            
-            // Log all AWS-related configuration keys
-            _logger.LogInformation("All AWS configuration keys:");
-            foreach (var key in _configuration.GetSection("AWS").GetChildren())
-            {
-                _logger.LogInformation("  {Key}: {Value}", key.Key, key.Value);
-            }
-            
-            // Log environment variables
-            _logger.LogInformation("Environment variables:");
-            _logger.LogInformation("  SenderEmail: {SenderEmail}", Environment.GetEnvironmentVariable("SenderEmail"));
-            _logger.LogInformation("  AWS_SenderEmail: {AWSSenderEmail}", Environment.GetEnvironmentVariable("AWS_SenderEmail"));
-            _logger.LogInformation("  ASPNETCORE_ENVIRONMENT: {Environment}", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
-            
-            _logger.LogInformation("=== END CONFIGURATION DEBUG ===");
             
             // Validate sender email is not null or empty
             if (string.IsNullOrWhiteSpace(senderEmail))
@@ -78,7 +55,7 @@ public class EmailService : IEmailService
                 Source = senderEmail,
                 Destination = new Destination
                 {
-                    ToAddresses = new List<string> { email }
+                    ToAddresses = [email]
                 },
                 Message = new Message
                 {
@@ -100,7 +77,6 @@ public class EmailService : IEmailService
             };
 
             _logger.LogInformation("Sending email request to SES for recipient: {RecipientEmail}", email);
-            _logger.LogInformation("Using sender email: {SenderEmail}", senderEmail);
             await _sesClient.SendEmailAsync(sendRequest);
             _logger.LogInformation("Email sent successfully to: {RecipientEmail}", email);
         }
@@ -119,12 +95,12 @@ public class EmailService : IEmailService
             
             throw new InvalidOperationException($"SES rejected the email: {ex.Message}. This usually means the sender email is not verified in SES.", ex);
         }
-        catch (Amazon.SimpleEmail.Model.MailFromDomainNotVerifiedException ex)
+        catch (MailFromDomainNotVerifiedException ex)
         {
             _logger.LogError(ex, "SES domain not verified for recipient: {RecipientEmail}. Error: {ErrorMessage}", email, ex.Message);
             throw new InvalidOperationException($"SES domain not verified: {ex.Message}. Please verify your sender domain in SES.", ex);
         }
-        catch (Amazon.SimpleEmail.Model.ConfigurationSetDoesNotExistException ex)
+        catch (ConfigurationSetDoesNotExistException ex)
         {
             _logger.LogError(ex, "SES configuration set not found for recipient: {RecipientEmail}. Error: {ErrorMessage}", email, ex.Message);
             throw new InvalidOperationException($"SES configuration set not found: {ex.Message}. Please check your SES configuration.", ex);

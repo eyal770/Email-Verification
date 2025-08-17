@@ -4,3 +4,17 @@ GET {{EmailVerificationSystem_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+### Submit Email for Verification
+POST {{EmailVerificationSystem_HostAddress}}/api/verification/submit
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### Verify Token
+GET {{EmailVerificationSystem_HostAddress}}/api/verification/verify/test-token-123
+
+### Health Check
+GET {{EmailVerificationSystem_HostAddress}}/api/verification/health

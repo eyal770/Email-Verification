@@ -135,103 +135,33 @@ public class VerificationController : ControllerBase
 
             if (verification == null)
             {
-                var html = CreateHtmlResponse("Verification Failed", "Invalid verification token. The token may have expired or does not exist.", false);
-                return File(System.Text.Encoding.UTF8.GetBytes(html), "text/html");
+                return Redirect($"/verification-result.html?status=invalid&message={Uri.EscapeDataString("Invalid verification token. The token may have expired or does not exist.")}&token={Uri.EscapeDataString(token)}");
             }
 
             if (verification.IsVerified)
             {
-                var html = CreateHtmlResponse("Already Verified", "This email has already been verified.", true);
-                return File(System.Text.Encoding.UTF8.GetBytes(html), "text/html");
+                return Redirect($"/verification-result.html?status=already-verified&message={Uri.EscapeDataString("This email has already been verified.")}&email={Uri.EscapeDataString(verification.Email)}&token={Uri.EscapeDataString(token)}");
             }
 
             // Check if token is expired (24 hours)
             if (verification.CreatedAt.AddHours(24) < DateTime.UtcNow)
             {
-                var html = CreateHtmlResponse("Verification Failed", "Verification token has expired. Please request a new verification email.", false);
-                return File(System.Text.Encoding.UTF8.GetBytes(html), "text/html");
+                return Redirect($"/verification-result.html?status=expired&message={Uri.EscapeDataString("Verification token has expired. Please request a new verification email.")}&email={Uri.EscapeDataString(verification.Email)}&token={Uri.EscapeDataString(token)}");
             }
 
             // Mark as verified
             verification.IsVerified = true;
             await _repository.UpdateVerificationAsync(verification);
 
-            var successHtml = CreateHtmlResponse("Email Verified!", "Your email has been successfully verified. Thank you!", true);
-            return File(System.Text.Encoding.UTF8.GetBytes(successHtml), "text/html");
+            return Redirect($"/verification-result.html?status=success&message={Uri.EscapeDataString("Your email has been successfully verified. Thank you!")}&email={Uri.EscapeDataString(verification.Email)}&token={Uri.EscapeDataString(token)}");
         }
         catch (Exception ex)
         {
-            var errorHtml = CreateHtmlResponse("Error", $"An error occurred: {ex.Message}", false);
-            return StatusCode(500, File(System.Text.Encoding.UTF8.GetBytes(errorHtml), "text/html"));
+            return Redirect($"/verification-result.html?status=error&message={Uri.EscapeDataString($"An error occurred: {ex.Message}")}&token={Uri.EscapeDataString(token)}");
         }
     }
 
-    private string CreateHtmlResponse(string title, string message, bool isSuccess)
-    {
-        var color = isSuccess ? "#4CAF50" : "#f44336";
-        var icon = isSuccess ? "✓" : "✗";
 
-        return $@"
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>{title}</title>
-            <meta charset='utf-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1'>
-            <style>
-                body {{ 
-                    font-family: Arial, sans-serif; 
-                    margin: 0; 
-                    padding: 20px; 
-                    background-color: #f5f5f5;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
-                }}
-                .container {{ 
-                    background-color: white;
-                    padding: 40px;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                    text-align: center;
-                    max-width: 500px;
-                    width: 100%;
-                }}
-                .icon {{ 
-                    font-size: 48px; 
-                    color: {color}; 
-                    margin-bottom: 20px; 
-                }}
-                h1 {{ 
-                    color: {color}; 
-                    margin-bottom: 20px; 
-                }}
-                p {{ 
-                    color: #666; 
-                    line-height: 1.6; 
-                    margin-bottom: 30px; 
-                }}
-                .btn {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 12px 24px; 
-                    text-decoration: none; 
-                    border-radius: 4px; 
-                    display: inline-block; 
-                }}
-            </style>
-        </head>
-        <body>
-            <div class='container'>
-                <div class='icon'>{icon}</div>
-                <h1>{title}</h1>
-                <p>{message}</p>
-                <a href='/' class='btn'>Back to Home</a>
-            </div>
-        </body>
-        </html>";
-    }
 
     /// <summary>
     /// Gets the verification URL using the current request's base URL

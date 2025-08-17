@@ -36,12 +36,12 @@ public static class DynamoDbTableManager
                 TableName = tableName,
                 KeySchema = new List<KeySchemaElement>
                 {
-                    new KeySchemaElement("Token", KeyType.HASH)
+                    new("Token", KeyType.HASH)
                 },
-                AttributeDefinitions = new List<AttributeDefinition>
-                {
+                AttributeDefinitions =
+                [
                     new AttributeDefinition("Token", ScalarAttributeType.S)
-                },
+                ],
                 BillingMode = BillingMode.PAY_PER_REQUEST
             };
             
