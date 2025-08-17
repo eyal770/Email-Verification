@@ -89,7 +89,6 @@ class VerificationResultPage {
     createSuccessActions() {
         return `
             <a href="/" class="btn">Back to Home</a>
-            <a href="/dashboard" class="btn-secondary">Go to Dashboard</a>
         `;
     }
 
