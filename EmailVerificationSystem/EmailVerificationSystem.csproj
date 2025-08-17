@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>ef976d19-09e4-4fb3-94d2-b03ab3082c8b</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.3.3" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.2.1" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="4.0.0.16" />
+    <PackageReference Include="AWSSDK.SSO" Version="4.0.0.17" />
+    <PackageReference Include="AWSSDK.SSOOIDC" Version="4.0.0.17" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
+  </ItemGroup>
+
+</Project>
