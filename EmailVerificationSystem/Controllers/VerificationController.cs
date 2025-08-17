@@ -143,8 +143,8 @@ public class VerificationController : ControllerBase
                 return Redirect($"/verification-result.html?status=already-verified&message={Uri.EscapeDataString("This email has already been verified.")}&email={Uri.EscapeDataString(verification.Email)}&token={Uri.EscapeDataString(token)}");
             }
 
-            // Check if token is expired (24 hours)
-            if (verification.CreatedAt.AddHours(24) < DateTime.UtcNow)
+                           // Check if token is expired (5 minutes)
+               if (verification.CreatedAt.AddMinutes(5) < DateTime.UtcNow)
             {
                 return Redirect($"/verification-result.html?status=expired&message={Uri.EscapeDataString("Verification token has expired. Please request a new verification email.")}&email={Uri.EscapeDataString(verification.Email)}&token={Uri.EscapeDataString(token)}");
             }

@@ -37,7 +37,7 @@ public class EmailService : IEmailService
                     <p><a href='{verificationLink}' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;'>Verify Email</a></p>
                     <p>If the button doesn't work, copy and paste this link into your browser:</p>
                     <p>{verificationLink}</p>
-                    <p>This link will expire after 24 hours for security reasons.</p>
+                    <p>This link will expire after 5 minutes for security reasons.</p>
                 </body>
                 </html>";
 
@@ -48,7 +48,7 @@ public class EmailService : IEmailService
                 
                 {verificationLink}
                 
-                This link will expire after 24 hours for security reasons.";
+                This link will expire after 5 minutes for security reasons.";
 
             var sendRequest = new SendEmailRequest
             {
